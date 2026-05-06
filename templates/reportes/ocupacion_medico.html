@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Ocupación por Médico - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Reporte de Ocupación por Médico</h1>
+<p class="subtitle">Período: {{ fecha_desde|date:"d/m/Y" }} al {{ fecha_hasta|date:"d/m/Y" }}</p>
+
+<div class="filter-bar">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="field">
+            <label>Desde</label>
+            <input type="date" name="fecha_desde" value="{{ fecha_desde|date:'Y-m-d' }}">
+        </div>
+        <div class="field">
+            <label>Hasta</label>
+            <input type="date" name="fecha_hasta" value="{{ fecha_hasta|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="card">
+    {% if datos %}
+    <table>
+        <thead>
+            <tr>
+                <th>Médico</th>
+                <th>Turnos Tomados</th>
+                <th>Slots Totales</th>
+                <th>Slots Libres</th>
+                <th>Ocupación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in datos %}
+            <tr>
+                <td><strong>{{ item.medico }}</strong></td>
+                <td>{{ item.turnos_tomados }}</td>
+                <td>{{ item.slots_totales }}</td>
+                <td>{{ item.slots_libres }}</td>
+                <td>
+                    <strong>{{ item.porcentaje_ocupacion }}%</strong>
+                    <div class="progress-bar">
+                        <div class="fill {% if item.porcentaje_ocupacion >= 70 %}fill-high{% elif item.porcentaje_ocupacion >= 40 %}fill-mid{% else %}fill-low{% endif %}" style="width: {{ item.porcentaje_ocupacion }}%;"></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Sin datos para el período seleccionado.</p>
+    {% endif %}
+</div>
+
+<a href="{% url 'reportes:dashboard' %}" class="btn btn-outline">Volver al Dashboard</a>
+{% endblock %}

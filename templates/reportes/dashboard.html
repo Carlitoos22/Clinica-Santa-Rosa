@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Dashboard Administrativo</h1>
+<p class="subtitle">Resumen general del período {{ fecha_desde|date:"d/m/Y" }} al {{ fecha_hasta|date:"d/m/Y" }}</p>
+
+<div class="filter-bar">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="field">
+            <label>Desde</label>
+            <input type="date" name="fecha_desde" value="{{ fecha_desde|date:'Y-m-d' }}">
+        </div>
+        <div class="field">
+            <label>Hasta</label>
+            <input type="date" name="fecha_hasta" value="{{ fecha_hasta|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="number">{{ canales.total }}</div>
+        <div class="label">Turnos Totales</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ ausentismo.atendidos }}</div>
+        <div class="label">Turnos Atendidos</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ ausentismo.no_shows }}</div>
+        <div class="label">No-Shows</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ ausentismo.tasa_ausentismo }}%</div>
+        <div class="label">Tasa de Ausentismo</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div class="card">
+        <h2>Ocupación por Especialidad</h2>
+        {% if ocupacion_especialidad %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Especialidad</th>
+                    <th>Turnos</th>
+                    <th>Ocupación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in ocupacion_especialidad %}
+                <tr>
+                    <td>{{ item.especialidad }}</td>
+                    <td>{{ item.turnos_tomados }}</td>
+                    <td>
+                        <strong>{{ item.porcentaje_ocupacion }}%</strong>
+                        <div class="progress-bar">
+                            <div class="fill {% if item.porcentaje_ocupacion >= 70 %}fill-high{% elif item.porcentaje_ocupacion >= 40 %}fill-mid{% else %}fill-low{% endif %}" style="width: {{ item.porcentaje_ocupacion }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">Sin datos para el período.</p>
+        {% endif %}
+        <a href="{% url 'reportes:ocupacion_especialidad' %}?fecha_desde={{ fecha_desde|date:'Y-m-d' }}&fecha_hasta={{ fecha_hasta|date:'Y-m-d' }}" class="btn btn-outline btn-sm" style="margin-top: 1rem;">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <h2>Turnos por Canal</h2>
+        {% if canales.por_canal %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Canal</th>
+                    <th>Cantidad</th>
+                    <th>Porcentaje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in canales.por_canal %}
+                <tr>
+                    <td><span class="badge badge-{{ item.canal }}">{{ item.canal_display }}</span></td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>
+                        <strong>{{ item.porcentaje }}%</strong>
+                        <div class="progress-bar">
+                            <div class="fill fill-high" style="width: {{ item.porcentaje }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">Sin datos para el período.</p>
+        {% endif %}
+        <a href="{% url 'reportes:canales' %}?fecha_desde={{ fecha_desde|date:'Y-m-d' }}&fecha_hasta={{ fecha_hasta|date:'Y-m-d' }}" class="btn btn-outline btn-sm" style="margin-top: 1rem;">Ver detalle</a>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <h2>Ocupación por Médico</h2>
+    {% if ocupacion_medico %}
+    <table>
+        <thead>
+            <tr>
+                <th>Médico</th>
+                <th>Turnos Tomados</th>
+                <th>Slots Totales</th>
+                <th>Libres</th>
+                <th>Ocupación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ocupacion_medico %}
+            <tr>
+                <td>{{ item.medico }}</td>
+                <td>{{ item.turnos_tomados }}</td>
+                <td>{{ item.slots_totales }}</td>
+                <td>{{ item.slots_libres }}</td>
+                <td>
+                    <strong>{{ item.porcentaje_ocupacion }}%</strong>
+                    <div class="progress-bar">
+                        <div class="fill {% if item.porcentaje_ocupacion >= 70 %}fill-high{% elif item.porcentaje_ocupacion >= 40 %}fill-mid{% else %}fill-low{% endif %}" style="width: {{ item.porcentaje_ocupacion }}%;"></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Sin datos para el período.</p>
+    {% endif %}
+</div>
+{% endblock %}

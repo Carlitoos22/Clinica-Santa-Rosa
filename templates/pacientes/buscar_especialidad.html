@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Reservar Turno - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Reservar Turno</h1>
+<p class="subtitle">Seleccioná una especialidad para ver los médicos y horarios disponibles</p>
+
+<div class="esp-grid">
+    {% for esp in especialidades %}
+    <a href="{% url 'pacientes:seleccionar_turno' esp.id %}" class="especialidad-card">
+        <h3>{{ esp.nombre }}</h3>
+        <p>{{ esp.descripcion }}</p>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

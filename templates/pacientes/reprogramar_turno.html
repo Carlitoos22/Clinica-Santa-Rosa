@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Reprogramar Turno - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+    <div class="card">
+        <h2>Reprogramar Turno</h2>
+        <div style="background: var(--gray-50); border-radius: var(--radius-sm); padding: 1.2rem; margin-bottom: 1.5rem;">
+            <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 0.3rem;">Turno actual</p>
+            <p><strong>{{ turno.especialidad.nombre }}</strong> con {{ turno.medico }}</p>
+            <p>{{ turno.fecha_hora|date:"d/m/Y" }} a las {{ turno.fecha_hora|date:"H:i" }}hs</p>
+        </div>
+
+        <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 1rem;">Seleccioná un nuevo horario</h3>
+
+        <div class="filter-bar" style="margin-bottom: 1.2rem;">
+            <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+                <div class="field">
+                    <label>Fecha</label>
+                    <input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}">
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+            </form>
+        </div>
+
+        {% if slots %}
+        <div class="slot-grid">
+            {% for slot in slots %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="fecha_hora" value="{{ slot|date:'Y-m-d H:i' }}">
+                <button type="submit" class="slot-btn">{{ slot|date:"H:i" }}hs</button>
+            </form>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty">No hay horarios disponibles para esta fecha.</p>
+        {% endif %}
+
+        <a href="{% url 'pacientes:mis_turnos' %}" class="btn btn-outline" style="margin-top: 1.2rem;">Volver</a>
+    </div>
+</div>
+{% endblock %}

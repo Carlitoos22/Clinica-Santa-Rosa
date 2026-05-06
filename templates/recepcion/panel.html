@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Panel de Recepción - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Panel de Recepción</h1>
+<p class="subtitle">Turnos del día {{ fecha|date:"d/m/Y" }}</p>
+
+<div style="display: flex; gap: 0.8rem; margin-bottom: 1.5rem;">
+    <a href="{% url 'recepcion:registrar_telefonico' %}" class="btn btn-primary">+ Nuevo Turno Telefónico</a>
+    <a href="{% url 'recepcion:buscar_turnos' %}" class="btn btn-outline">Buscar Turnos</a>
+</div>
+
+<div class="card">
+    <h2>Agenda del Día</h2>
+    {% if turnos_hoy %}
+    <table>
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>DNI</th>
+                <th>Médico</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+                <th>Canal</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for turno in turnos_hoy %}
+            <tr>
+                <td><strong>{{ turno.fecha_hora|date:"H:i" }}</strong></td>
+                <td>{{ turno.paciente.usuario.get_full_name }}</td>
+                <td>{{ turno.paciente.usuario.dni }}</td>
+                <td>{{ turno.medico.usuario.get_full_name }}</td>
+                <td>{{ turno.especialidad.nombre }}</td>
+                <td><span class="badge badge-{{ turno.estado }}">{{ turno.get_estado_display }}</span></td>
+                <td><span class="badge badge-{{ turno.canal }}">{{ turno.get_canal_display }}</span></td>
+                <td class="actions">
+                    {% if turno.estado == 'reservado' %}
+                        <form method="post" action="{% url 'recepcion:checkin' turno.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Check-in</button>
+                        </form>
+                        <form method="post" action="{% url 'recepcion:noshow' turno.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning btn-sm">No-show</button>
+                        </form>
+                        <a href="{% url 'recepcion:cancelar_turno' turno.id %}" class="btn btn-danger btn-sm">Cancelar</a>
+                    {% elif turno.estado == 'confirmado' %}
+                        <form method="post" action="{% url 'recepcion:atendido' turno.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Atendido</button>
+                        </form>
+                    {% else %}
+                        <span style="color: var(--gray-500); font-size: 0.8rem;">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No hay turnos agendados para hoy.</p>
+    {% endif %}
+</div>
+{% endblock %}

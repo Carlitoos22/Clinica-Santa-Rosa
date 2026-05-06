@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Ausentismo - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Reporte de Ausentismo</h1>
+<p class="subtitle">Período: {{ fecha_desde|date:"d/m/Y" }} al {{ fecha_hasta|date:"d/m/Y" }}</p>
+
+<div class="filter-bar">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="field">
+            <label>Desde</label>
+            <input type="date" name="fecha_desde" value="{{ fecha_desde|date:'Y-m-d' }}">
+        </div>
+        <div class="field">
+            <label>Hasta</label>
+            <input type="date" name="fecha_hasta" value="{{ fecha_hasta|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="number">{{ datos.total_turnos }}</div>
+        <div class="label">Turnos Totales</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ datos.atendidos }}</div>
+        <div class="label">Atendidos</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ datos.no_shows }}</div>
+        <div class="label">No-Shows</div>
+    </div>
+    <div class="stat-card">
+        <div class="number" style="{% if datos.tasa_ausentismo > 15 %}color: var(--danger){% elif datos.tasa_ausentismo > 10 %}color: var(--warning){% else %}color: var(--success){% endif %}">
+            {{ datos.tasa_ausentismo }}%
+        </div>
+        <div class="label">Tasa de Ausentismo</div>
+    </div>
+</div>
+
+{% if datos.por_medico %}
+<div class="card">
+    <h2>Ausentismo por Médico</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Médico</th>
+                <th>Turnos</th>
+                <th>No-Shows</th>
+                <th>Tasa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in datos.por_medico %}
+            <tr>
+                <td><strong>{{ item.usuario__first_name }} {{ item.usuario__last_name }}</strong></td>
+                <td>{{ item.total }}</td>
+                <td>{{ item.noshows }}</td>
+                <td>
+                    {% widthratio item.noshows item.total 100 as tasa %}
+                    <strong>{{ tasa }}%</strong>
+                    <div class="progress-bar">
+                        <div class="fill {% if tasa > 15 %}fill-low{% elif tasa > 10 %}fill-mid{% else %}fill-high{% endif %}" style="width: {{ tasa }}%;"></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if datos.por_especialidad %}
+<div class="card">
+    <h2>Ausentismo por Especialidad</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Especialidad</th>
+                <th>Turnos</th>
+                <th>No-Shows</th>
+                <th>Tasa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in datos.por_especialidad %}
+            <tr>
+                <td><strong>{{ item.nombre }}</strong></td>
+                <td>{{ item.total }}</td>
+                <td>{{ item.noshows }}</td>
+                <td>
+                    {% widthratio item.noshows item.total 100 as tasa %}
+                    <strong>{{ tasa }}%</strong>
+                    <div class="progress-bar">
+                        <div class="fill {% if tasa > 15 %}fill-low{% elif tasa > 10 %}fill-mid{% else %}fill-high{% endif %}" style="width: {{ tasa }}%;"></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<a href="{% url 'reportes:dashboard' %}" class="btn btn-outline">Volver al Dashboard</a>
+{% endblock %}

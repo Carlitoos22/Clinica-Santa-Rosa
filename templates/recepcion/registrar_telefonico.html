@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Turno Telefónico - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Registrar Turno Telefónico</h1>
+<p class="subtitle">Registro rápido de turno por llamada telefónica</p>
+
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label>DNI del Paciente</label>
+            <input type="text" name="dni" required placeholder="Ingresá el DNI del paciente" autofocus>
+        </div>
+        <div class="form-grid">
+            <div class="field">
+                <label>Especialidad</label>
+                <select name="especialidad_id" required>
+                    <option value="">Seleccionar...</option>
+                    {% for esp in especialidades %}
+                    <option value="{{ esp.id }}">{{ esp.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label>Médico</label>
+                <select name="medico_id" required>
+                    <option value="">Seleccionar...</option>
+                    {% for medico in medicos %}
+                    <option value="{{ medico.id }}">{{ medico.usuario.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <label>Fecha y Hora</label>
+            <input type="datetime-local" name="fecha_hora" required>
+        </div>
+        <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem;">
+            <button type="submit" class="btn btn-primary">Registrar Turno</button>
+            <a href="{% url 'recepcion:panel' %}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

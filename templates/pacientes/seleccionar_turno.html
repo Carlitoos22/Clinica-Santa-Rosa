@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}{{ especialidad.nombre }} - Turnos Disponibles{% endblock %}
+
+{% block content %}
+<h1>{{ especialidad.nombre }}</h1>
+<p class="subtitle">Seleccioná un médico y horario para reservar tu turno</p>
+
+<div class="filter-bar">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="field">
+            <label>Fecha</label>
+            <input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+</div>
+
+{% if medicos_disponibles %}
+    {% for medico, slots in medicos_disponibles %}
+    <div class="card">
+        <h2>{{ medico }}</h2>
+        <p style="color: var(--gray-500); font-size: 0.88rem; margin-bottom: 1rem;">
+            {{ slots|length }} horario{{ slots|length|pluralize:"s" }} disponible{{ slots|length|pluralize:"s" }} el {{ fecha|date:"d/m/Y" }}
+        </p>
+        <div class="slot-grid">
+            {% for slot in slots %}
+            <form method="post" action="{% url 'pacientes:reservar_turno' %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="medico_id" value="{{ medico.id }}">
+                <input type="hidden" name="especialidad_id" value="{{ especialidad.id }}">
+                <input type="hidden" name="fecha_hora" value="{{ slot|date:'Y-m-d H:i' }}">
+                <button type="submit" class="slot-btn">{{ slot|date:"H:i" }}hs</button>
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <p class="empty">No hay turnos disponibles para esta fecha. Probá con otra fecha.</p>
+    </div>
+{% endif %}
+
+<a href="{% url 'pacientes:buscar_especialidad' %}" class="btn btn-outline" style="margin-top: 0.5rem;">Volver a especialidades</a>
+{% endblock %}

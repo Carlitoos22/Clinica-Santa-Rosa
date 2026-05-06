@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Buscar Turnos - Recepción{% endblock %}
+
+{% block content %}
+<h1>Buscar Turnos</h1>
+<p class="subtitle">Buscá por nombre, apellido, DNI o fecha</p>
+
+<div class="filter-bar">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; width: 100%;">
+        <div class="field" style="flex: 1; min-width: 200px;">
+            <label>Nombre, Apellido o DNI</label>
+            <input type="text" name="q" value="{{ query }}" placeholder="Ej: González o 35678901" autofocus>
+        </div>
+        <div class="field">
+            <label>Fecha</label>
+            <input type="date" name="fecha" value="{{ fecha }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+</div>
+
+{% if turnos %}
+<div class="card">
+    <h2>Resultados ({{ turnos|length }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha y Hora</th>
+                <th>Paciente</th>
+                <th>DNI</th>
+                <th>Médico</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+                <th>Canal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for turno in turnos %}
+            <tr>
+                <td>#{{ turno.id }}</td>
+                <td>{{ turno.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ turno.paciente.usuario.get_full_name }}</td>
+                <td>{{ turno.paciente.usuario.dni }}</td>
+                <td>{{ turno.medico.usuario.get_full_name }}</td>
+                <td>{{ turno.especialidad.nombre }}</td>
+                <td><span class="badge badge-{{ turno.estado }}">{{ turno.get_estado_display }}</span></td>
+                <td><span class="badge badge-{{ turno.canal }}">{{ turno.get_canal_display }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif query or fecha %}
+<div class="card">
+    <p class="empty">No se encontraron turnos con esos criterios.</p>
+</div>
+{% endif %}
+{% endblock %}

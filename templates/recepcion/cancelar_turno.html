@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Cancelar Turno - Recepción{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 2rem auto;">
+    <div class="card">
+        <h2>Cancelar Turno</h2>
+        <div style="background: var(--gray-50); border-radius: var(--radius-sm); padding: 1.2rem; margin-bottom: 1.5rem;">
+            <p><strong>Paciente:</strong> {{ turno.paciente.usuario.get_full_name }} (DNI: {{ turno.paciente.usuario.dni }})</p>
+            <p><strong>Especialidad:</strong> {{ turno.especialidad.nombre }}</p>
+            <p><strong>Médico:</strong> {{ turno.medico }}</p>
+            <p><strong>Fecha:</strong> {{ turno.fecha_hora|date:"d/m/Y" }} a las {{ turno.fecha_hora|date:"H:i" }}hs</p>
+            <p><strong>Canal:</strong> <span class="badge badge-{{ turno.canal }}">{{ turno.get_canal_display }}</span></p>
+        </div>
+
+        {% if not turno.puede_cancelar %}
+        <div style="background: #fef9e7; color: #7d6608; padding: 0.85rem; border-radius: var(--radius-sm); margin-bottom: 1.2rem; font-size: 0.88rem; border-left: 4px solid var(--warning);">
+            Faltan menos de 2 horas. Se registrará como no-show.
+        </div>
+        {% endif %}
+
+        <div style="display: flex; gap: 0.8rem;">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Confirmar Cancelación</button>
+            </form>
+            <a href="{% url 'recepcion:panel' %}" class="btn btn-outline">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Mis Bloqueos - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Mis Bloqueos de Horario</h1>
+<p class="subtitle">Períodos de no disponibilidad activos</p>
+
+<a href="{% url 'medicos:bloquear_horario' %}" class="btn btn-primary" style="margin-bottom: 1.5rem;">+ Nuevo Bloqueo</a>
+
+<div class="card">
+    {% if bloqueos %}
+    <table>
+        <thead>
+            <tr>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Motivo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bloqueo in bloqueos %}
+            <tr>
+                <td>{{ bloqueo.fecha_inicio|date:"d/m/Y H:i" }}</td>
+                <td>{{ bloqueo.fecha_fin|date:"d/m/Y H:i" }}</td>
+                <td>{{ bloqueo.motivo|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No tenés bloqueos de horario activos.</p>
+    {% endif %}
+</div>
+{% endblock %}

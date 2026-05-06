@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Registro - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 2rem auto;">
+    <div class="card">
+        <h2 style="justify-content: center;">Crear Cuenta</h2>
+        <p style="color: var(--gray-500); font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">
+            Registrate para reservar turnos online
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="field">
+                    <label>Nombre</label>
+                    <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required placeholder="Tu nombre">
+                </div>
+                <div class="field">
+                    <label>Apellido</label>
+                    <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required placeholder="Tu apellido">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label>DNI</label>
+                    <input type="text" name="dni" value="{{ form.dni.value|default:'' }}" required placeholder="Ej: 35678901">
+                </div>
+                <div class="field">
+                    <label>Celular</label>
+                    <input type="text" name="celular" value="{{ form.celular.value|default:'' }}" placeholder="Ej: 3794123456">
+                </div>
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="tu@email.com">
+            </div>
+            <div class="field">
+                <label>Usuario</label>
+                <input type="text" name="username" value="{{ form.username.value|default:'' }}" required placeholder="Elegí un nombre de usuario">
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label>Contraseña</label>
+                    <input type="password" name="password1" required placeholder="Mínimo 8 caracteres">
+                </div>
+                <div class="field">
+                    <label>Confirmar Contraseña</label>
+                    <input type="password" name="password2" required placeholder="Repetí la contraseña">
+                </div>
+            </div>
+            {% if form.errors %}
+            <div style="background: #fdedec; color: #c0392b; padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.85rem;">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
+                Crear Cuenta
+            </button>
+        </form>
+        <p style="margin-top: 1.2rem; font-size: 0.88rem; color: var(--gray-500); text-align: center;">
+            ¿Ya tenés cuenta? <a href="{% url 'login' %}" style="color: var(--primary-light); font-weight: 600;">Iniciá sesión</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

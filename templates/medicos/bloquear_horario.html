@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Bloquear Horario - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Bloquear Horario</h1>
+<p class="subtitle">Indicá períodos de no disponibilidad (vacaciones, congresos, etc.)</p>
+
+<div class="card" style="max-width: 550px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="field">
+                <label>Desde</label>
+                <input type="datetime-local" name="fecha_inicio" required>
+            </div>
+            <div class="field">
+                <label>Hasta</label>
+                <input type="datetime-local" name="fecha_fin" required>
+            </div>
+        </div>
+        <div class="field">
+            <label>Motivo (opcional)</label>
+            <input type="text" name="motivo" placeholder="Ej: Vacaciones, Congreso de Cardiología">
+        </div>
+        <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem;">
+            <button type="submit" class="btn btn-primary">Bloquear</button>
+            <a href="{% url 'medicos:mis_bloqueos' %}" class="btn btn-outline">Ver mis bloqueos</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

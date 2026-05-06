@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Turnos por Canal - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Reporte de Turnos por Canal</h1>
+<p class="subtitle">Período: {{ fecha_desde|date:"d/m/Y" }} al {{ fecha_hasta|date:"d/m/Y" }}</p>
+
+<div class="filter-bar">
+    <form method="get" style="display: flex; gap: 1rem; align-items: end;">
+        <div class="field">
+            <label>Desde</label>
+            <input type="date" name="fecha_desde" value="{{ fecha_desde|date:'Y-m-d' }}">
+        </div>
+        <div class="field">
+            <label>Hasta</label>
+            <input type="date" name="fecha_hasta" value="{{ fecha_hasta|date:'Y-m-d' }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="number">{{ datos.total }}</div>
+        <div class="label">Turnos Totales</div>
+    </div>
+    {% for item in datos.por_canal %}
+    <div class="stat-card">
+        <div class="number">{{ item.cantidad }}</div>
+        <div class="label">{{ item.canal_display }} ({{ item.porcentaje }}%)</div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2>Detalle por Canal</h2>
+    {% if datos.por_canal %}
+    <table>
+        <thead>
+            <tr>
+                <th>Canal</th>
+                <th>Cantidad</th>
+                <th>Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in datos.por_canal %}
+            <tr>
+                <td><span class="badge badge-{{ item.canal }}">{{ item.canal_display }}</span></td>
+                <td><strong>{{ item.cantidad }}</strong></td>
+                <td>
+                    <strong>{{ item.porcentaje }}%</strong>
+                    <div class="progress-bar" style="width: 200px; display: inline-block; vertical-align: middle; margin-left: 0.5rem;">
+                        <div class="fill fill-high" style="width: {{ item.porcentaje }}%;"></div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Sin datos para el período seleccionado.</p>
+    {% endif %}
+</div>
+
+<a href="{% url 'reportes:dashboard' %}" class="btn btn-outline">Volver al Dashboard</a>
+{% endblock %}

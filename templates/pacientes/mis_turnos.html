@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Mis Turnos - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Mis Turnos</h1>
+
+<div class="card">
+    <h2>Turnos Próximos</h2>
+    {% if turnos_futuros %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Especialidad</th>
+                <th>Médico</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for turno in turnos_futuros %}
+            <tr>
+                <td><strong>{{ turno.fecha_hora|date:"d/m/Y" }}</strong> a las {{ turno.fecha_hora|date:"H:i" }}hs</td>
+                <td>{{ turno.especialidad.nombre }}</td>
+                <td>{{ turno.medico }}</td>
+                <td><span class="badge badge-{{ turno.estado }}">{{ turno.get_estado_display }}</span></td>
+                <td class="actions">
+                    <a href="{% url 'pacientes:reprogramar_turno' turno.id %}" class="btn btn-outline btn-sm">Reprogramar</a>
+                    <a href="{% url 'pacientes:cancelar_turno' turno.id %}" class="btn btn-danger btn-sm">Cancelar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No tenés turnos próximos. <a href="{% url 'pacientes:buscar_especialidad' %}" style="color: var(--primary-light); font-weight: 600;">Reservar uno</a></p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Historial</h2>
+    {% if turnos_pasados %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Especialidad</th>
+                <th>Médico</th>
+                <th>Estado</th>
+                <th>Canal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for turno in turnos_pasados %}
+            <tr>
+                <td>{{ turno.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ turno.especialidad.nombre }}</td>
+                <td>{{ turno.medico }}</td>
+                <td><span class="badge badge-{{ turno.estado }}">{{ turno.get_estado_display }}</span></td>
+                <td><span class="badge badge-{{ turno.canal }}">{{ turno.get_canal_display }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Todavía no tenés turnos en el historial.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Mi Agenda - Clínica Santa Rosa{% endblock %}
+
+{% block content %}
+<h1>Mi Agenda</h1>
+
+<div class="date-nav">
+    <a href="?fecha={{ fecha_anterior|date:'Y-m-d' }}">&larr;</a>
+    <span class="current-date">{{ fecha|date:"l d \d\e F \d\e Y" }}</span>
+    <a href="?fecha={{ fecha_siguiente|date:'Y-m-d' }}">&rarr;</a>
+</div>
+
+<div class="card">
+    <h2>Pacientes del día</h2>
+    {% if turnos %}
+    <table>
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>DNI</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for turno in turnos %}
+            <tr>
+                <td><strong>{{ turno.fecha_hora|date:"H:i" }}hs</strong></td>
+                <td>{{ turno.paciente.usuario.get_full_name }}</td>
+                <td>{{ turno.paciente.usuario.dni }}</td>
+                <td>{{ turno.especialidad.nombre }}</td>
+                <td><span class="badge badge-{{ turno.estado }}">{{ turno.get_estado_display }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No tenés turnos para este día.</p>
+    {% endif %}
+</div>
+{% endblock %}
