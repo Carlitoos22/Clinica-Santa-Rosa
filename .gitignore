@@ -8,3 +8,7 @@ dist/
 build/
 .vscode/
 .idea/
+node_modules/
+docs/node_modules/
+docs/gen_*.js
+docs/package*.json

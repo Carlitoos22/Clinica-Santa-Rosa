@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegistroForm, LoginForm
+from core.models import Paciente
 
 
 def registro_view(request):
@@ -10,6 +11,7 @@ def registro_view(request):
         form = RegistroForm(request.POST)
         if form.is_valid():
             usuario = form.save()
+            Paciente.objects.create(usuario=usuario)
             login(request, usuario)
             messages.success(request, 'Cuenta creada exitosamente.')
             return redirect('dashboard')
@@ -41,6 +43,8 @@ def logout_view(request):
 def dashboard_view(request):
     rol = request.user.rol
     if rol == 'paciente':
+        # Crear perfil de paciente si no existe (por si se registró antes del fix)
+        Paciente.objects.get_or_create(usuario=request.user)
         return redirect('pacientes:mis_turnos')
     elif rol == 'recepcionista':
         return redirect('recepcion:panel')
