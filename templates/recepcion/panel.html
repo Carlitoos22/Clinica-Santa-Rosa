@@ -3,7 +3,13 @@
 
 {% block content %}
 <h1>Panel de Recepción</h1>
-<p class="subtitle">Turnos del día {{ fecha|date:"d/m/Y" }}</p>
+
+<div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+    <a href="?fecha={{ fecha_anterior|date:'Y-m-d' }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem;">&larr;</a>
+    <h2 style="margin: 0;">{{ fecha|date:"l d/m/Y" }}</h2>
+    <a href="?fecha={{ fecha_siguiente|date:'Y-m-d' }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem;">&rarr;</a>
+    <a href="{% url 'recepcion:panel' %}" class="btn btn-outline" style="padding: 0.4rem 0.8rem;">Hoy</a>
+</div>
 
 <div style="display: flex; gap: 0.8rem; margin-bottom: 1.5rem;">
     <a href="{% url 'recepcion:registrar_telefonico' %}" class="btn btn-primary">+ Nuevo Turno Telefónico</a>
@@ -11,7 +17,6 @@
 </div>
 
 <div class="card">
-    <h2>Agenda del Día</h2>
     {% if turnos_hoy %}
     <table>
         <thead>

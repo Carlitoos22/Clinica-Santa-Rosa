@@ -10,31 +10,51 @@
         {% csrf_token %}
         <div class="field">
             <label>DNI del Paciente</label>
-            <input type="text" name="dni" required placeholder="Ingresá el DNI del paciente" autofocus>
+            <input type="text" name="dni" value="{{ dni|default:'' }}" required placeholder="Ej: 35678901" autofocus inputmode="numeric">
         </div>
-        <div class="form-grid">
+
+        {% if mostrar_datos_paciente %}
+        <div style="background: var(--bg-warning, #FFF3CD); border: 1px solid var(--border-warning, #FBBF24); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+            <p style="margin: 0 0 0.8rem 0; font-weight: 600;">Paciente no registrado. Completá sus datos:</p>
             <div class="field">
-                <label>Especialidad</label>
-                <select name="especialidad_id" required>
-                    <option value="">Seleccionar...</option>
-                    {% for esp in especialidades %}
-                    <option value="{{ esp.id }}">{{ esp.nombre }}</option>
-                    {% endfor %}
-                </select>
+                <label>Nombre</label>
+                <input type="text" name="nombre" value="{{ nombre|default:'' }}" required placeholder="Nombre del paciente">
             </div>
             <div class="field">
-                <label>Médico</label>
-                <select name="medico_id" required>
-                    <option value="">Seleccionar...</option>
-                    {% for medico in medicos %}
-                    <option value="{{ medico.id }}">{{ medico.usuario.get_full_name }}</option>
-                    {% endfor %}
-                </select>
+                <label>Apellido</label>
+                <input type="text" name="apellido" value="{{ apellido|default:'' }}" required placeholder="Apellido del paciente">
             </div>
+            <div class="field">
+                <label>Celular (opcional)</label>
+                <input type="text" name="celular" value="{{ celular|default:'' }}" placeholder="Ej: 3794123456" inputmode="tel">
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="field">
+            <label>Especialidad</label>
+            <select name="especialidad_id" id="especialidad_id" required>
+                <option value="">Seleccionar especialidad...</option>
+                {% for esp in especialidades %}
+                <option value="{{ esp.id }}" {% if especialidad_id|default:"" == esp.id|stringformat:"d" %}selected{% endif %}>{{ esp.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label>Médico</label>
+            <select name="medico_id" id="medico_id" required>
+                <option value="">Primero seleccioná una especialidad</option>
+                {% for medico in medicos %}
+                <option value="{{ medico.id }}" data-especialidades="{{ medico.especialidades.all|join:',' }}" {% if medico_id|default:"" == medico.id|stringformat:"d" %}selected{% endif %}>
+                    {{ medico.usuario.get_full_name }} ({{ medico.especialidades.all|join:", " }})
+                </option>
+                {% endfor %}
+            </select>
         </div>
         <div class="field">
             <label>Fecha y Hora</label>
-            <input type="datetime-local" name="fecha_hora" required>
+            <input type="datetime-local" name="fecha_hora" value="{{ fecha_hora|default:'' }}" required>
+            <small style="color: var(--text-muted, #888);">Horario de atención: Lunes a Viernes, 08:00-12:00 y 14:00-18:00</small>
         </div>
         <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem;">
             <button type="submit" class="btn btn-primary">Registrar Turno</button>
@@ -42,4 +62,23 @@
         </div>
     </form>
 </div>
+
+<script>
+document.getElementById('especialidad_id').addEventListener('change', function() {
+    const espText = this.options[this.selectedIndex].text;
+    const medicoSelect = document.getElementById('medico_id');
+    const options = medicoSelect.querySelectorAll('option[data-especialidades]');
+
+    options.forEach(opt => {
+        if (espText && opt.dataset.especialidades.includes(espText)) {
+            opt.style.display = '';
+        } else if (espText) {
+            opt.style.display = 'none';
+        } else {
+            opt.style.display = '';
+        }
+    });
+    medicoSelect.value = '';
+});
+</script>
 {% endblock %}
