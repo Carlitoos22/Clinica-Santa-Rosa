@@ -4,7 +4,7 @@ Sistema web para la gestión de turnos médicos de la Clínica Santa Rosa, desar
 
 ## Descripción
 
-La Clínica Santa Rosa es una institución privada con 12 médicos distribuidos en 6 especialidades que atiende aproximadamente 80 turnos diarios. Este sistema reemplaza el proceso manual basado en planillas de Excel, permitiendo la reserva online de turnos, gestión por recepción, consulta de agenda médica y reportes administrativos.
+La Clínica Santa Rosa es una institución privada, la cual posee 12 médicos distribuidos en 6 especialidades que atiende aproximadamente 80 turnos diarios. Este sistema reemplaza el proceso manual basado en planillas de Excel, permitiendo la reserva online de turnos, gestión por recepción, consulta de agenda médica y reportes administrativos.
 
 ### Objetivos del sistema
 
